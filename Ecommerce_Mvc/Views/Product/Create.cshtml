@@ -1,0 +1,52 @@
+﻿@using Ecommerce_Mvc.ViewModel
+@model ProductViewModel
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="container shadow p-5">
+    <div class="row  pb-2">
+        <h1>Add Product</h1>
+    </div>
+
+
+    <form method="post" class="form-floating">
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" asp-for="Name" placeholder="Enter product name" />
+            <label asp-for="Name">Name</label>
+            <span asp-validation-for="Name" class="alert-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" asp-for="Description" placeholder="Enter category name" />
+            <label asp-for="Description">Description</label>
+            <span asp-validation-for="Description" class="alert-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" asp-for="Price" placeholder="Enter Price Name" />
+            <label asp-for="Price">Price</label>
+            <span asp-validation-for="Price" class="alert-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select single-select dropdown" asp-for="CategoryId" asp-items="Model.Category"></select>
+            <label asp-for="CategoryId">Category</label>
+            <span asp-validation-for="CategoryId" class="alert-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" asp-for="Color" placeholder="Enter Product Color" />
+            <label asp-for="Color">Color</label>
+            <span asp-validation-for="Color" class="alert-danger"></span>
+        </div>
+       <div class="form-floating mb-3">
+           <input type="text" class="form-control" asp-for="Image" placeholder="Enter Image URL">
+           <label asp-for="Image">ImageURL</label>
+           <span asp-validation-for="Image" class="alert-danger"></span>
+       </div>
+
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Back To List</a>
+    </form>
+</div>

@@ -1,0 +1,22 @@
+﻿@model Ecommerce_Mvc.Models.Category
+@{
+    ViewData["Title"] = "Delete Category";
+}
+<div class="container shadow p-5">
+    <div class="row">
+        <h2>Delete Category</h2>
+    </div>
+
+    <form method="post" asp-action="DeleteCategory">
+        <input asp-for="CategoryId" hidden />
+
+        <div class="card" style="width: 18rem;">            
+            <div class="card-body">
+                <h5 class="card-title">Category ID : @Model.CategoryId</h5>
+                <p class="card-text">Category : @Model.CategoryName</p>
+                 <button type="submit" class="btn btn-danger">Delete</button>
+                 <a asp-controller="Category" asp-action="Index" class="btn btn-primary">Back To List</a>
+            </div>
+        </div>
+    </form>
+</div>

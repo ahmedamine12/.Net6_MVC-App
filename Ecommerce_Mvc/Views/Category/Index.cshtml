@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Ecommerce_Mvc.Models.Category>
+@{
+    ViewData["Title"] = "Category List";
+}
+
+
+<div class="container shadow p-5">
+    @if (TempData["SuccessMsg"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMsg"]
+        </div>
+    }
+    <h1 class="text-center">Category List</h1>
+    <div class="col mb-3">
+        <a asp-controller="Category" asp-action="Create" class="btn btn-primary">Add Category</a>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Category Id</th>
+                <th scope="col"> Category Name</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td width="30%">
+                        @item.CategoryId
+                    </td>
+                    <td width="40%">
+                        @item.CategoryName
+                    </td>
+                    <td width="30%">
+                        <a asp-controller="Category" asp-action="Edit" asp-route-categoryId="@item.CategoryId" class=" btn btn-primary">Edit</a>&nbsp;
+                        <a asp-controller="Category" asp-action="Delete" asp-route-categoryId="@item.CategoryId" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

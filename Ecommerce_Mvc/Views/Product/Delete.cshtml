@@ -1,0 +1,26 @@
+﻿@using Ecommerce_Mvc.ViewModel
+@model ProductViewModel
+@{
+    ViewData["Title"] = "Delete Product";
+}
+<div class="container shadow p-5">
+    <div class="row">
+        <h2>Delete Product</h2>
+    </div>
+
+    <form method="post" asp-action="DeleteProduct">
+        <input asp-for="Id" hidden />        
+
+        <div class="card" style="width: 18rem;"> 
+            <img src="@Model.Image" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Name</h5>
+                <p class="card-text">@Model.Description</p>
+                <p class="card-text"> <strong>Price:</strong>@Model.Price</p>
+                <p class="card-text"><strong>Color:</strong>@Model.Color</p>
+                 <button type="submit" class="btn btn-danger">Delete</button>
+                 <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Back To List</a>
+            </div>
+        </div>
+    </form>
+</div>

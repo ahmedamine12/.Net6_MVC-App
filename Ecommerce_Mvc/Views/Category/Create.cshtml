@@ -1,0 +1,20 @@
+﻿@model Ecommerce_Mvc.Models.Category
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<div class="container shadow p-5">
+    <div class="row">
+        <h1>Add Category</h1>
+    </div>
+    <form method="post">
+        @*<div asp-validation-summary="All" class="alert-danger"></div> *@      
+        <div class="form-floating mb-3">            
+            <input type="text"  class="form-control" asp-for="CategoryName" placeholder="Enter category name" />
+            <label for="CategoryName">Category Name</label>
+            <span asp-validation-for="CategoryName" class="alert-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success">Save</button>
+        <a asp-controller="Category" asp-action="Index" class="btn btn-primary">Back</a>
+    </form>
+</div>

@@ -1,0 +1,83 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc/Ecommerce_Mvc.csproj": {}
+  },
+  "projects": {
+    "/home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc/Ecommerce_Mvc.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc/Ecommerce_Mvc.csproj",
+        "projectName": "Ecommerce_Mvc",
+        "projectPath": "/home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc/Ecommerce_Mvc.csproj",
+        "packagesPath": "/home/bouricha/.nuget/packages/",
+        "outputPath": "/home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/bouricha/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/6.0.125/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
