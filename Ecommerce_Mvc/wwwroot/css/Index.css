@@ -42,3 +42,75 @@
 .btn-group .btn {
     border-radius: 0;
 }
+/* Add this to your Index.css file */
+
+/* Style for the Shopping Cart Modal */
+#cartModal {
+    font-family: 'Arial', sans-serif;
+}
+
+#cartModal .modal-dialog {
+    max-width: 800px;
+}
+
+#cartModal .modal-content {
+    background-color: #f8f9fa;
+    border: 2px solid #17a2b8;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#cartModal .modal-header {
+    background-color: #17a2b8;
+    color: #fff;
+    border-bottom: 1px solid #138496;
+    border-radius: 8px 8px 0 0;
+}
+
+#cartModal .modal-title {
+    font-size: 1.8rem;
+}
+
+#cartModal .modal-body {
+    padding: 20px;
+}
+
+#cartModal .cart-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+#cartModal .cart-item-title {
+    font-weight: bold;
+}
+
+#cartModal .cart-item-price {
+    color: #007bff;
+}
+
+#cartModal .cart-item-quantity {
+    color: #28a745;
+}
+
+#cartModal .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 0 0 8px 8px;
+}
+
+#cartModal .btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+#cartModal p {
+    margin-bottom: 0;
+}
+
+/* Additional styles for the Close button in the modal header */
+#cartModal .modal-header .close {
+    color: #fff;
+    font-size: 1.5rem;
+}
