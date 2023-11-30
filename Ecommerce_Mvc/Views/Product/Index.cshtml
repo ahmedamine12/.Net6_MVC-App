@@ -43,7 +43,7 @@
                             </thead>
                             <!-- Table body with product details -->
                             <tbody>
-                                @foreach (var product in ViewBag.CartProducts)
+                            @foreach (var product in ViewBag.CartProducts)
                                 {
                                     <tr>
                                         <td>@(product?.Name ?? "N/A")</td>
@@ -138,14 +138,15 @@
                                     <i class="fas fa-trash-alt"></i> Delete
                                 </a>
                             </div>
-                            <form method="post" asp-action="AddToCart" asp-controller="Product" class="mt-2">
-                                <input type="hidden" name="productId" value="@item.Id" />
-                                <label for="quantity">Quantity:</label>
-                                <input type="number" name="quantity" value="1" min="1" />
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-shopping-cart"></i> Add to Cart
-                                </button>
-                            </form>
+                           <form method="post" asp-action="AddToCart" asp-controller="Product" class="mt-2">
+                               <input type="hidden" name="productId" value="@item.Id" />
+                               <label for="quantity">Quantity:</label>
+                               <input type="number" name="quantity" value="1" min="1" />
+                               <button type="submit" class="btn btn-primary">
+                                   <i class="fas fa-shopping-cart"></i> Add to Cart
+                               </button>
+                           </form>
+
                         </div>
                     </div>
                 </div>

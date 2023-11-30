@@ -1,14 +1,14 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Ecommerce_Mvc.Data;
 using Ecommerce_Mvc.Models;
+using Ecommerce_Mvc.ViewModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
-
-
-using Ecommerce_Mvc.ViewModel;
-using Ecommerce_Mvc.ViewModel;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Ecommerce_Mvc.Controllers
 {
@@ -16,7 +16,7 @@ namespace Ecommerce_Mvc.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public ProductController(ApplicationDbContext context)
+         public ProductController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -25,19 +25,16 @@ namespace Ecommerce_Mvc.Controllers
         {
             IQueryable<Product> products = _context.Products.Include(p => p.Category);
 
-            // Filter by search term
             if (!string.IsNullOrEmpty(search))
             {
                 products = products.Where(p => p.Name.Contains(search) || p.Description.Contains(search));
             }
 
-            // Filter by category
             if (!string.IsNullOrEmpty(category))
             {
                 products = products.Where(p => p.Category.CategoryName == category);
             }
 
-            // Project the results into ProductListViewModel
             var productListViewModels = products
                 .Select(p => new ProductListViewModel
                 {
@@ -49,17 +46,49 @@ namespace Ecommerce_Mvc.Controllers
                     Image = p.Image,
                     CategoryId = p.CategoryId,
                     CategoryName = p.Category.CategoryName,
-                    Quantity = 0  // Set quantity as needed
+                    Quantity = 0
                 })
                 .ToList();
 
-            // Set categories to ViewBag
             ViewBag.Categories = _context.Categories.ToList();
+
+            var shoppingCart = HttpContext.Request.Cookies.ContainsKey("ShoppingCart")
+                ? JsonConvert.DeserializeObject<ShoppingCart>(HttpContext.Request.Cookies["ShoppingCart"])
+                : new ShoppingCart();
+            var cartProductIds = shoppingCart.Items.Select(item => item.ProductId).ToList();
+
+            // Retrieve products from the database based on the product IDs
+            var cartProducts = _context.Products
+                .Include(p => p.Category)
+                .Where(p => cartProductIds.Contains(p.Id))
+                .ToList();
+
+            // Create a list of ProductListViewModel by joining products and shopping cart items
+            var cartProductViewModels = cartProducts
+                .Join(shoppingCart.Items,
+                    product => product.Id,
+                    cartItem => cartItem.ProductId,
+                    (product, cartItem) => new ProductListViewModel
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        Description = product.Description,
+                        Price = product.Price,
+                        Color = product.Color,
+                        Image = product.Image,
+                        CategoryId = product.CategoryId,
+                        Quantity = cartItem.Quantity,
+                        CategoryName = product.Category.CategoryName
+                    })
+                .ToList();
+
+            // Set the CartProducts to ViewBag
+            ViewBag.CartProducts = cartProductViewModels;
+
+            HttpContext.Session.SetString("ShoppingCart", JsonConvert.SerializeObject(shoppingCart));
 
             return View(productListViewModels);
         }
-
-
 
         public IActionResult Create()
         {
@@ -209,8 +238,7 @@ namespace Ecommerce_Mvc.Controllers
             return RedirectToAction("Index");
         }
 
-       
-        [HttpPost]
+         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddToCart(int productId, int quantity)
         {
@@ -224,14 +252,15 @@ namespace Ecommerce_Mvc.Controllers
 
                 var shoppingCartJson = JsonConvert.SerializeObject(shoppingCart);
 
-                // Save the shopping cart in a cookie with an expiration time (e.g., 7 days)
                 var cookieOptions = new CookieOptions
                 {
                     Expires = DateTime.Now.AddDays(7),
-                    HttpOnly = true
+                    HttpOnly = true,
+                    Path = "/" // Set the appropriate path
                 };
 
                 Response.Cookies.Append("ShoppingCart", shoppingCartJson, cookieOptions);
+                HttpContext.Session.SetString("ShoppingCart", shoppingCartJson);
 
                 TempData["SuccessMsg"] = $"Added {quantity} {(quantity > 1 ? "items" : "item")} to the shopping cart.";
 
@@ -241,54 +270,57 @@ namespace Ecommerce_Mvc.Controllers
             {
                 Console.WriteLine($"Error in AddToCart action: {ex.Message}");
                 TempData["ErrorMsg"] = "An error occurred while adding the product to the shopping cart.";
-                return RedirectToAction("Index");
+                return RedirectToAction("ViewCart");
             }
         }
 
-
         public IActionResult ViewCart()
         {
-            var shoppingCartJson = HttpContext.Request.Cookies["ShoppingCart"];
-            var shoppingCart = !string.IsNullOrEmpty(shoppingCartJson)
-                ? JsonConvert.DeserializeObject<ShoppingCart>(shoppingCartJson)
-                : new ShoppingCart();
+            try
+            {
+                var shoppingCart = HttpContext.Request.Cookies.ContainsKey("ShoppingCart")
+                    ? JsonConvert.DeserializeObject<ShoppingCart>(HttpContext.Request.Cookies["ShoppingCart"])
+                    : new ShoppingCart();
 
-            // Log the shopping cart content for debugging purposes
-            Console.WriteLine($"Shopping Cart Items: {JsonConvert.SerializeObject(shoppingCart.Items)}");
+                var cartProductIds = shoppingCart.Items.Select(item => item.ProductId).ToList();
+                var cartProducts = _context.Products
+                    .Include(p => p.Category)
+                    .Where(p => cartProductIds.Contains(p.Id))
+                    .ToList();
 
-            var cartProductIds = shoppingCart.Items.Select(item => item.ProductId).ToList();
+                var cartProductViewModels = cartProducts
+                    .Join(shoppingCart.Items,
+                        product => product.Id,
+                        cartItem => cartItem.ProductId,
+                        (product, cartItem) => new ProductListViewModel
+                        {
+                            Id = product.Id,
+                            Name = product.Name,
+                            Description = product.Description,
+                            Price = product.Price,
+                            Color = product.Color,
+                            Image = product.Image,
+                            CategoryId = product.CategoryId,
+                            Quantity = cartItem.Quantity,
+                            CategoryName = product.Category.CategoryName
+                        })
+                    .ToList();
 
-            var cartProducts = _context.Products
-                .Include(p => p.Category)
-                .Where(p => cartProductIds.Contains(p.Id))
-                .ToList();
+                ViewBag.CartProducts = cartProductViewModels;
+                HttpContext.Session.SetString("ShoppingCart", JsonConvert.SerializeObject(shoppingCart));
 
-            var cartProductViewModels = cartProducts
-                .Join(shoppingCart.Items,
-                    product => product.Id,
-                    cartItem => cartItem.ProductId,
-                    (product, cartItem) => new ProductListViewModel
-                    {
-                        Id = product.Id,
-                        Name = product.Name,
-                        Description = product.Description,
-                        Price = product.Price,
-                        Color = product.Color,
-                        Image = product.Image,
-                        CategoryId = product.CategoryId,
-                        Quantity = cartItem.Quantity,
-                        CategoryName = product.Category.CategoryName
-                    })
-                .ToList();
+                var productListViewModels = GetProductListViewModels();
 
-            // Set the CartProducts to ViewBag
-            ViewBag.CartProducts = cartProductViewModels;
+                ViewBag.Categories = _context.Categories.ToList();
 
-            // Retrieve all products for the main view
-            var productListViewModels = GetProductListViewModels();
-
-            // Return the main view with the cart products
-            return View("Index", productListViewModels);
+                return View("Index", productListViewModels);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ViewCart action: {ex.Message}");
+                TempData["ErrorMsg"] = "An error occurred while retrieving the shopping cart.";
+                return View("Index", GetProductListViewModels());
+            }
         }
 
         private List<ProductListViewModel> GetProductListViewModels()
@@ -309,10 +341,5 @@ namespace Ecommerce_Mvc.Controllers
 
             return productListViewModelList;
         }
-
-       
-
-
-        
     }
 }

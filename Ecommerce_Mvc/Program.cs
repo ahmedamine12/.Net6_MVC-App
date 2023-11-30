@@ -12,13 +12,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 // Add session services
-builder.Services.AddDistributedMemoryCache(); // Add this line to configure in-memory caching
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set your preferred timeout
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
