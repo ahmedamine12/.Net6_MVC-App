@@ -1,20 +1,25 @@
+/* Product Card Styles */
 .product-card {
-    border: 1px solid #dee2e6;
-    transition: box-shadow 0.3s;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    transition: transform 0.3s, box-shadow 0.3s;
     display: flex;
     flex-direction: column;
     height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .product-card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .product-image-container {
-    height: 200px; /* Set a fixed height for the container */
+    height: 200px;
     overflow: hidden;
     position: relative;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid #ddd;
 }
 
 .product-image-container img {
@@ -27,10 +32,11 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    padding: 15px;
 }
 
 .card-footer {
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid #ddd;
     padding: 10px;
     text-align: center;
 }
@@ -42,9 +48,8 @@
 .btn-group .btn {
     border-radius: 0;
 }
-/* Add this to your Index.css file */
 
-/* Style for the Shopping Cart Modal */
+/* Shopping Cart Modal Styles */
 #cartModal {
     font-family: 'Arial', sans-serif;
 }
@@ -54,17 +59,16 @@
 }
 
 #cartModal .modal-content {
-    background-color: #f8f9fa;
-    border: 2px solid #17a2b8;
+    background-color: #fff;
+    border: 2px solid #007bff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 #cartModal .modal-header {
-    background-color: #17a2b8;
+    background-color: #007bff;
     color: #fff;
-    border-bottom: 1px solid #138496;
-    border-radius: 8px 8px 0 0;
+    border-radius: 10px 10px 0 0;
 }
 
 #cartModal .modal-title {
@@ -77,9 +81,10 @@
 
 #cartModal .cart-item {
     margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #dee2e6;
+    padding: 15px;
+    border: 1px solid #ddd;
     border-radius: 8px;
+    background-color: #f8f9fa;
 }
 
 #cartModal .cart-item-title {
@@ -95,9 +100,9 @@
 }
 
 #cartModal .modal-footer {
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid #ddd;
     padding: 15px;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 10px 10px;
 }
 
 #cartModal .btn-secondary {
