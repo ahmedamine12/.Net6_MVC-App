@@ -25,5 +25,16 @@ namespace Ecommerce_Mvc.Models
                 Items.Add(new ShoppingCartItem { ProductId = productId, Quantity = quantity });
             }
         }
+
+        public void RemoveProduct(int productId)
+        {
+            var existingItem = Items.FirstOrDefault(item => item.ProductId == productId);
+
+            if (existingItem != null)
+            {
+                // If the product is in the cart, remove it
+                Items.Remove(existingItem);
+            }
+        }
     }
 }

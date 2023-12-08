@@ -116,6 +116,6 @@
 
 /* Additional styles for the Close button in the modal header */
 #cartModal .modal-header .close {
-    color: #fff;
+    color: #000; /* Change to black or a color that contrasts well with the header background */
     font-size: 1.5rem;
 }

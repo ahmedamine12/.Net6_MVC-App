@@ -18,57 +18,64 @@
 
 
 
-   <!-- Shopping Cart Modal -->
-   <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
-       <div class="modal-dialog" role="document">
-           <div class="modal-content">
-               <div class="modal-header">
-                   <h5 class="modal-title" id="cartModalLabel">Shopping Cart</h5>
-                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                       <span aria-hidden="true">&times;</span>
-                   </button>
-               </div>
-   
-               @if (ViewBag.CartProducts != null && ViewBag.CartProducts.Count > 0)
-               {
-                   <div class="modal-body">
-                       <!-- Display cart details here, for example, a table of products -->
-                       <table class="table table-bordered">
-                           <!-- Table headers -->
-                           <thead>
-                               <tr>
-                                   <th>Product</th>
-                                   <th>Price</th>
-                                   <th>Quantity</th>
-                               </tr>
-                           </thead>
-                           <!-- Table body with product details -->
-                           <tbody>
-                               @foreach (var product in ViewBag.CartProducts)
-                               {
-                                   <tr>
-                                       <td>@(product?.Name ?? "N/A")</td>
-                                       <td>@(product?.Price ?? 0.00) $</td>
-                                       <td>@product?.Quantity</td> <!-- Display the quantity -->
-                                   </tr>
-                               }
-                           </tbody>
-                       </table>
-                   </div>
-               }
-               else
-               {
-                   <div class="modal-body">
-                       <p>No items in the shopping cart.</p>
-                   </div>
-               }
-   
-               <div class="modal-footer">
-                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               </div>
-           </div>
-       </div>
-   </div>
+  <!-- Shopping Cart Modal -->
+  <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="cartModalLabel">Shopping Cart</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+  
+              @if (ViewBag.CartProducts != null && ViewBag.CartProducts.Count > 0)
+              {
+                  <div class="modal-body">
+                      <!-- Display cart details here, using a list -->
+                      <ul class="list-group">
+                          @foreach (var product in ViewBag.CartProducts)
+                          {
+                              <li class="list-group-item">
+                                  <div class="d-flex justify-content-between">
+                                      <div>
+                                          <strong>@(product?.Name ?? "N/A")</strong>
+                                          <span class="badge badge-primary">@product?.Quantity</span>
+                                      </div>
+                                      <div>
+                                          <span class="badge badge-secondary">@product.Price.ToString("C")</span>
+                                          <!-- Delete button -->
+                                          <form method="post" asp-action="RemoveFromCart" asp-controller="Product" class="d-inline">
+                                              <input type="hidden" name="productId" value="@product.Id" />
+                                              <button type="submit" class="btn btn-danger btn-sm">
+                                                  <i class="fas fa-trash"></i> Remove
+                                              </button>
+                                          </form>
+                                      </div>
+                                  </div>
+                                  <div class="text-muted">
+                                      <span>Price: @(product?.Price ?? "N/A")  DH</span>
+                                      <span class="ml-3">Quantity: @product?.Quantity</span>
+                                  </div>
+                              </li>
+                          }
+                      </ul>
+                  </div>
+              }
+              else
+              {
+                  <div class="modal-body">
+                      <p>No items in the shopping cart.</p>
+                  </div>
+              }
+  
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
 
 
     <h1 class="text-center mb-4">Product List</h1>
@@ -123,7 +130,7 @@
                             <h5 class="card-title">@item.Name</h5>
                             <p class="card-text description">@item.Description</p>
                             <ul class="list-unstyled">
-                                <li><strong>Price:</strong> @item.Price $</li>
+                                <li><strong>Price:</strong> @item.Price DH</li>
                                 <li><strong>Color:</strong> @item.Color</li>
                                 <li><strong>Category:</strong> @item.CategoryName</li>
                             </ul>

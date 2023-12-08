@@ -501,6 +501,52 @@ namespace Ecommerce_Mvc.Controllers
             // Return the list of ProductListViewModel
             return productListViewModelList;
         }
+        
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveFromCart(int productId)
+        {
+            try
+            {
+                // Retrieve the shopping cart from cookies or create a new one
+                var shoppingCart = HttpContext.Request.Cookies.ContainsKey("ShoppingCart")
+                    ? JsonConvert.DeserializeObject<ShoppingCart>(HttpContext.Request.Cookies["ShoppingCart"])
+                    : new ShoppingCart();
+
+                // Remove the selected product from the shopping cart
+                shoppingCart.RemoveProduct(productId);
+
+                // Serialize the shopping cart to JSON
+                var shoppingCartJson = JsonConvert.SerializeObject(shoppingCart);
+
+                // Set cookie options for the shopping cart
+                var cookieOptions = new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(7),
+                    HttpOnly = true,
+                    Path = "/"
+                };
+
+                // Update the shopping cart in cookies and session
+                Response.Cookies.Append("ShoppingCart", shoppingCartJson, cookieOptions);
+                HttpContext.Session.SetString("ShoppingCart", shoppingCartJson);
+
+                // Provide a success message to be displayed
+                TempData["SuccessMsg"] = "Product removed from the shopping cart.";
+
+                // Redirect to the shopping cart view
+                return RedirectToAction("ViewCart");
+            }
+            catch (Exception ex)
+            {
+                // Log errors and redirect to the error page
+                _logger.LogError(ex, "\x1b[31mError in RemoveFromCart action: {ErrorMessage}\x1b[0m", ex.Message);
+                TempData["ErrorMsg"] = "An error occurred while removing the product from the shopping cart.";
+                return RedirectToAction("ViewCart");
+            }
+        }
 
     }
+    
 }
