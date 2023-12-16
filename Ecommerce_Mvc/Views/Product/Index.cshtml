@@ -17,6 +17,26 @@
 
 
 
+    
+@if (@ViewBag.CurrentUser != null)
+    {
+        <form asp-controller="Account" asp-action="Logout" method="post" class="ml-auto">
+            <button  style="float: right" type="submit" class="btn btn-outline-primary py-1 px-3">Sign Out</button>
+                <p class="nav-welcome ml-2">Welcome, @ViewBag.CurrentUser.FirstName @ViewBag.CurrentUser.LastName</p>
+            
+        </form>
+    }
+    else
+    {
+        <div  style="float: right">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary mx-2">Sign In</a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary mx-2">Register</a>
+        </div>
+    }
+
+
+
+
 
   <!-- Shopping Cart Modal -->
   <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">

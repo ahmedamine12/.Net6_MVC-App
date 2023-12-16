@@ -4,10 +4,13 @@ using Microsoft.EntityFrameworkCore;
 // Import necessary namespaces for the controller
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using Ecommerce_Mvc.Models;
 using Ecommerce_Mvc.ViewModel;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging; // Add this namespace for ILogger
@@ -19,106 +22,139 @@ namespace Ecommerce_Mvc.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ProductController> _logger; // ILogger for logging
-
+        private readonly UserManager<ApplicationUser> _userManager; 
         // Constructor to initialize ApplicationDbContext and ILogger
-        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger)
+        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger ,UserManager<ApplicationUser> userManager)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
         // Action to display the list of products
-        public IActionResult Index(string search, string category)
+      public async Task<IActionResult> Index(string search, string category)
+{
+    try
+    {
+        // Retrieve products from the database including category information
+        IQueryable<Product> products = _context.Products.Include(p => p.Category);
+
+        // Apply search filter if provided
+        if (!string.IsNullOrEmpty(search))
         {
-            try
+            products = products.Where(p => p.Name.Contains(search) || p.Description.Contains(search));
+        }
+
+        // Apply category filter if provided
+        if (!string.IsNullOrEmpty(category))
+        {
+            products = products.Where(p => p.Category.CategoryName == category);
+        }
+
+        // Create a list of ProductListViewModel to display in the view
+        var productListViewModels = products
+            .Select(p => new ProductListViewModel
             {
-                // Retrieve products from the database including category information
-                IQueryable<Product> products = _context.Products.Include(p => p.Category);
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                Color = p.Color,
+                Image = p.Image,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category.CategoryName,
+                Quantity = 0
+            })
+            .ToList();
 
-                // Apply search filter if provided
-                if (!string.IsNullOrEmpty(search))
+        // Provide categories to the view
+        ViewBag.Categories = _context.Categories.ToList();
+
+        // Retrieve shopping cart from cookies or create a new one
+        var shoppingCart = HttpContext.Request.Cookies.ContainsKey("ShoppingCart")
+            ? JsonConvert.DeserializeObject<ShoppingCart>(HttpContext.Request.Cookies["ShoppingCart"])
+            : new ShoppingCart();
+
+        // Retrieve product IDs in the shopping cart
+        var cartProductIds = shoppingCart.Items.Select(item => item.ProductId).ToList();
+
+        // Retrieve products from the database based on the product IDs in the cart
+        var cartProducts = _context.Products
+            .Include(p => p.Category)
+            .Where(p => cartProductIds.Contains(p.Id))
+            .ToList();
+
+        // Create a list of ProductListViewModel by joining products and shopping cart items
+        var cartProductViewModels = cartProducts
+            .Join(shoppingCart.Items,
+                product => product.Id,
+                cartItem => cartItem.ProductId,
+                (product, cartItem) => new ProductListViewModel
                 {
-                    products = products.Where(p => p.Name.Contains(search) || p.Description.Contains(search));
-                }
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Color = product.Color,
+                    Image = product.Image,
+                    CategoryId = product.CategoryId,
+                    Quantity = cartItem.Quantity,
+                    CategoryName = product.Category.CategoryName
+                })
+            .ToList();
 
-                // Apply category filter if provided
-                if (!string.IsNullOrEmpty(category))
-                {
-                    products = products.Where(p => p.Category.CategoryName == category);
-                }
+        // Set the CartProducts to ViewBag
+        ViewBag.CartProducts = cartProductViewModels;
 
-                // Create a list of ProductListViewModel to display in the view
-                var productListViewModels = products
-                    .Select(p => new ProductListViewModel
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Description = p.Description,
-                        Price = p.Price,
-                        Color = p.Color,
-                        Image = p.Image,
-                        CategoryId = p.CategoryId,
-                        CategoryName = p.Category.CategoryName,
-                        Quantity = 0
-                    })
-                    .ToList();
+        // Update the shopping cart in session
+        HttpContext.Session.SetString("ShoppingCart", JsonConvert.SerializeObject(shoppingCart));
 
-                // Provide categories to the view
-                ViewBag.Categories = _context.Categories.ToList();
+        var jwtToken = HttpContext.Request.Cookies["JwtToken"];
 
-                // Retrieve shopping cart from cookies or create a new one
-                var shoppingCart = HttpContext.Request.Cookies.ContainsKey("ShoppingCart")
-                    ? JsonConvert.DeserializeObject<ShoppingCart>(HttpContext.Request.Cookies["ShoppingCart"])
-                    : new ShoppingCart();
+        if (!string.IsNullOrEmpty(jwtToken))
+        {
+          
+            // Decode the token and extract user information
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(jwtToken) as JwtSecurityToken;
 
-                // Retrieve product IDs in the shopping cart
-                var cartProductIds = shoppingCart.Items.Select(item => item.ProductId).ToList();
-
-                // Retrieve products from the database based on the product IDs in the cart
-                var cartProducts = _context.Products
-                    .Include(p => p.Category)
-                    .Where(p => cartProductIds.Contains(p.Id))
-                    .ToList();
-
-                // Create a list of ProductListViewModel by joining products and shopping cart items
-                var cartProductViewModels = cartProducts
-                    .Join(shoppingCart.Items,
-                        product => product.Id,
-                        cartItem => cartItem.ProductId,
-                        (product, cartItem) => new ProductListViewModel
-                        {
-                            Id = product.Id,
-                            Name = product.Name,
-                            Description = product.Description,
-                            Price = product.Price,
-                            Color = product.Color,
-                            Image = product.Image,
-                            CategoryId = product.CategoryId,
-                            Quantity = cartItem.Quantity,
-                            CategoryName = product.Category.CategoryName
-                        })
-                    .ToList();
-
-                // Set the CartProducts to ViewBag
-                ViewBag.CartProducts = cartProductViewModels;
-
-                // Update the shopping cart in session
-                HttpContext.Session.SetString("ShoppingCart", JsonConvert.SerializeObject(shoppingCart));
-
-                // Log successful product list retrieval
-                _logger.LogInformation("\x1b[32m**********Product list retrieved successfully.**********\x1b[0m");
-
-                // Return the view with the list of products
-                return View(productListViewModels);
-            }
-            catch (Exception ex)
+            // Extract user information from the token claims
+            var currentUserEmail = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name)?.Value;
+            
+            if (!string.IsNullOrEmpty(currentUserEmail))
             {
-                // Log errors and redirect to the error page
-                _logger.LogError("\x1b[31mError in Index action: {ErrorMessage}\x1b[0m", ex.Message);
-                TempData["ErrorMsg"] = "An error occurred while processing your request.";
-                return RedirectToAction("Index");
+               
+                // Retrieve user information based on the email
+                var normalizedEmail = _userManager.NormalizeEmail(currentUserEmail);
+                var currentUser = await _userManager.FindByEmailAsync(normalizedEmail);
+                Console.WriteLine(currentUserEmail + "*******3333333");
+               
+                if (currentUser != null)
+                { 
+                    Console.WriteLine(currentUser + "hellllo*******222222");
+                    // Pass user information to the view
+                    ViewBag.CurrentUser = currentUser;
+                }
             }
         }
+
+
+        // Log successful product list retrieval
+        _logger.LogInformation("\x1b[32m**********Product list retrieved successfully.**********\x1b[0m");
+
+        // Return the view with the list of products
+        return View(productListViewModels);
+    }
+    catch (Exception ex)
+    {
+        // Log errors and redirect to the error page
+        _logger.LogError("\x1b[31mError in Index action: {ErrorMessage}\x1b[0m", ex.Message);
+        _logger.LogError("\x1b[31mStack Trace: {StackTrace}\x1b[0m", ex.StackTrace);
+        TempData["ErrorMsg"] = "An error occurred while processing your request.";
+        return RedirectToAction("Index");
+    }
+}
+
 
         // Action to display the form for creating a new product
         public IActionResult Create()

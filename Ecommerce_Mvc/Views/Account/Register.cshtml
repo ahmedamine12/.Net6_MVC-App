@@ -1,0 +1,40 @@
+<!-- Register View -->
+@using Ecommerce_Mvc.ViewModel
+@model RegisterViewModel
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2>Register</h2>
+
+            <form asp-action="Register" asp-controller="Account" method="post">
+                <div class="form-group">
+                    <label asp-for="FirstName">First Name</label>
+                    <input asp-for="FirstName" class="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="LastName">Last Name</label>
+                    <input asp-for="LastName" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Password">Password</label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword">Confirm Password</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Register</button>
+            </form>
+        </div>
+    </div>
+</div>

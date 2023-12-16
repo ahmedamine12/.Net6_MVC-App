@@ -15,6 +15,14 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = /home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc
 build_property._RazorSourceGeneratorDebug = 
 
+[/home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9SZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/bouricha/Documents/TPs__.NET/Ecommerce_Mvc/Ecommerce_Mvc/Views/Category/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2F0ZWdvcnkvQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
