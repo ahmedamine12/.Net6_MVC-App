@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("AppContextDB") ?? string.Empty)
 );
 
-builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -52,8 +52,8 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "MVCapp",         // Replace with your actual issuer
-        ValidAudience = "MVCapp",     // Replace with your actual audience
+        ValidIssuer = "MVCapp",         
+        ValidAudience = "MVCapp",     
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });

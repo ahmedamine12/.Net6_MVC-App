@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ecommerce_Mvc.Models;
 using Ecommerce_Mvc.ViewModel;
-using Ecommerce_Mvc.Controllers;
+
 namespace Ecommerce_Mvc.Controllers
 {
     public class AccountController : Controller
@@ -18,6 +18,7 @@ namespace Ecommerce_Mvc.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly byte[] _jwtSecretKey;
 
+        // Constructor for initializing UserManager, SignInManager, and JWT secret key
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
@@ -25,18 +26,19 @@ namespace Ecommerce_Mvc.Controllers
             _jwtSecretKey = GenerateJwtSecretKey();
         }
 
-        // Registration action
+        // Registration action - displays the registration view
         public IActionResult Register()
         {
             return View();
         }
 
-        [HttpPost]
+        // POST method for user registration
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
+                // Create a new ApplicationUser based on the registration model
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
@@ -45,21 +47,22 @@ namespace Ecommerce_Mvc.Controllers
                     LastName = model.LastName,
                 };
 
+                // Attempt to create the user in the Identity system
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
+                    // Sign in the user after successful registration
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
-                    // Generate a JWT token
+                    // Generate a JWT token for the user
                     var token = GenerateJwtToken(model.Email);
-
-                    // You can do something with the token, such as storing it in a cookie
 
                     // Redirect to the login page after successful registration
                     return RedirectToAction("Login");
                 }
 
+                // Display registration errors if the creation was not successful
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
@@ -69,28 +72,25 @@ namespace Ecommerce_Mvc.Controllers
             return View(model);
         }
 
-
-
-
-        // Login action
+        // Login action - displays the login view
         public IActionResult Login()
         {
             return View();
         }
 
+        // POST method for user login
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
+                // Attempt to sign in the user using the provided credentials
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
                 if (result.Succeeded)
                 {
-                    // Generate a JWT token
+                    // Generate a JWT token for the user
                     var token = GenerateJwtToken(model.Email);
-                    var currentUser = await _userManager.FindByEmailAsync(model.Email);
-                    Console.WriteLine("hiiiiiiiiiiiiiiiiii***" + currentUser);
 
                     // Store the token in a cookie
                     Response.Cookies.Append("JwtToken", token, new CookieOptions
@@ -120,6 +120,8 @@ namespace Ecommerce_Mvc.Controllers
 
             return View(model);
         }
+
+        // POST method for user logout
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -133,7 +135,7 @@ namespace Ecommerce_Mvc.Controllers
             return RedirectToAction("Index", "Product");
         }
 
-
+        // Helper method to generate a JWT token for a given email
         private string GenerateJwtToken(string email)
         {
             var claims = new[]
@@ -159,6 +161,7 @@ namespace Ecommerce_Mvc.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        // Helper method to generate a random JWT secret key
         private byte[] GenerateJwtSecretKey()
         {
             var keyBytes = new byte[32];
