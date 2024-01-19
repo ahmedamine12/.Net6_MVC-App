@@ -34,6 +34,12 @@ builder.Services.AddLogging(builder =>
     builder.AddConsole();
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin",
+        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
+
 var key = GenerateJwtSecretKey();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -73,6 +79,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 
+
+app.UseCors("AllowAnyOrigin");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
